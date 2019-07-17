@@ -1,7 +1,8 @@
 const express = require('express');
 const app = express();
 
-const movies = require('./routes/movies') ;
+const poke_list = require('./routes/poke_list') ;
+const user_friends = require('./routes/user_friends') ;
 const users = require('./routes/users');
 
 
@@ -10,7 +11,8 @@ app.get('/', function(req, res){
 });
 
 app.use('/users', users);
-app.use('/movies', movies);
+app.use('/user_friends', user_friends);
+app.use('/poke_list', poke_list);
 
 app.get('/favicon.ico', function(req, res) {
     res.sendStatus(204);

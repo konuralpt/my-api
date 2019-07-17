@@ -17,7 +17,7 @@ module.exports = {
 	},
 
 	authenticate: function(req,res,next){
-		userModel.findOne({email: req.body.email},function(err,userInfo){
+		userModel.findOne({_id: req.body.id},function(err,userInfo){
 			if(err){
 				next(err);
 			}else{
@@ -28,6 +28,13 @@ module.exports = {
 					res.json({status:"error", message: "Invalid email/password!!!", data:null});
 				}
 			}
+		})
+	},
+
+	updateUser: function(req,res,next){
+		console.log(req.body);
+		userModel.findOneAndUpdate({_id: req.body.user_id},{socket_id: req.body.socket_id},function(err,userInfo){
+
 		})
 	}
 

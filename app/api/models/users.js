@@ -19,7 +19,14 @@ const UserSchema = new Schema({
   type: String,
   trim: true,
   required: true
- }
+ },
+ image_uri: {
+    type: String,
+    trim: true
+    },
+socket_id: {
+  type: String
+ },
 });
 
 UserSchema.pre('save',function(next){
