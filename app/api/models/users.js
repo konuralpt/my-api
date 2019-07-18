@@ -22,11 +22,17 @@ const UserSchema = new Schema({
  },
  image_uri: {
     type: String,
-    trim: true
+    trim: true,
+    default: ''
     },
 socket_id: {
-  type: String
+  type: String,
+  default: ''
  },
+ push_token: {
+   type: String,
+   default: ''
+ }
 });
 
 UserSchema.pre('save',function(next){

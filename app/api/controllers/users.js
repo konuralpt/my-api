@@ -3,6 +3,16 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 module.exports = {
+	findById: function(req,res,next){
+		userModel.find({_id: req.params.user_id}, function(err,user){
+			if(err){
+				next(err);
+			}else{
+				res.json({status: "success", message:"User found", data: user});
+			}
+
+		})
+	},
 	create: function(req,res,next){
 		userModel.create({
 			name: req.body.name, 
@@ -17,7 +27,7 @@ module.exports = {
 	},
 
 	authenticate: function(req,res,next){
-		userModel.findOne({_id: req.body.id},function(err,userInfo){
+		userModel.findOne({email: req.body.email},function(err,userInfo){
 			if(err){
 				next(err);
 			}else{
@@ -33,7 +43,7 @@ module.exports = {
 
 	updateUser: function(req,res,next){
 		console.log(req.body);
-		userModel.findOneAndUpdate({_id: req.body.user_id},{socket_id: req.body.socket_id},function(err,userInfo){
+		userModel.findOneAndUpdate({_id: req.body.user_id},{socket_id: req.body.socket_id, push_token: req.body.push_token},function(err,userInfo){
 
 		})
 	}

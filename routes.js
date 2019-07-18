@@ -10,9 +10,9 @@ app.get('/', function(req, res){
 	res.json({"tutorial" : "Build REST API with node.js"});
 });
 
-app.use('/users', users);
-app.use('/user_friends', user_friends);
-app.use('/poke_list', poke_list);
+app.use('/api/users', users);
+app.use('/api/user_friends', user_friends);
+app.use('/api/poke_list', poke_list);
 
 app.get('/favicon.ico', function(req, res) {
     res.sendStatus(204);
