@@ -1,10 +1,10 @@
-const user_friendsModel = require('../models/user_friends');
+const relationshipsModel = require('../models/relationships');
 const mongoose = require('mongoose');
 
 module.exports = {
 
   getAll: function(req, res, next) {
-    user_friendsModel.find({}, function(err, userFriends){
+    relationshipsModel.find({}, function(err, userFriends){
      if (err) {
       next(err);
      } else {
@@ -14,12 +14,14 @@ module.exports = {
    },
 
  getFriendsById: function(req, res, next) {
-  user_friendsModel.aggregate([
-    {$match: {user_id: mongoose.Types.ObjectId(req.params.user_id) }},
+  relationshipsModel.aggregate([
+    {$match: {
+      user_id: mongoose.Types.ObjectId(req.params.user_id)
+    }},
     { $lookup:
      {
        from: 'users',
-       localField: 'user_friends',
+       localField: 'relationship.user_id',
        foreignField: '_id',
        as: 'friends'
      }
@@ -35,17 +37,24 @@ module.exports = {
  },
 
 updateById: function(req, res, next) {
-    user_friendsModel.findByIdAndUpdate(req.params.id,{name:req.body.friend_id}, function(err, movieInfo){
-
-  });
+  relationshipsModel.findOneAndUpdate(
+      req.body.user_id,
+      {"$push": {user_friends: req.body.friend_id}},
+      function(err, user_friendsData){
+        if(err){
+          next(err);
+        }else{
+          res.json({status: "success", message: "", data:{user_friends:user_friendsData}})
+        }
+      });
  },
  
 deleteById: function(req, res, next) {
 
- },
+},
 
 create: function(req, res, next) {
-    user_friendsModel.create({ }, function (err, result) {
+  relationshipsModel.create({ }, function (err, result) {
       if (err) 
        next(err);
       else

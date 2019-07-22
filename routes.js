@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 
 const poke_list = require('./routes/poke_list') ;
-const user_friends = require('./routes/user_friends') ;
+const relationships = require('./routes/relationships') ;
 const users = require('./routes/users');
 
 
@@ -11,7 +11,7 @@ app.get('/', function(req, res){
 });
 
 app.use('/api/users', users);
-app.use('/api/user_friends', user_friends);
+app.use('/api/relationships', relationships);
 app.use('/api/poke_list', poke_list);
 
 app.get('/favicon.ico', function(req, res) {
