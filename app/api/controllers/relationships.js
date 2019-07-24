@@ -64,3 +64,49 @@ create: function(req, res, next) {
  },
  
 }
+
+/*
+db.getCollection('relationships').aggregate([
+  {$match: {
+      user_id: ObjectId("5d2f574b1c27807fd7eb133d")}
+  },
+  { $unwind: "$relationship" },
+  { $lookup: {
+    from: "users",
+    let: { relationship_id: '$relationship.user_id',relationship_status: '$relationship.status', },
+    pipeline: [
+      { $match: {
+          $expr: { $and: [
+              { $eq: [ "$_id", "$$relationship_id" ] },
+              { $eq: [ "$$relationship_status", 2 ] }
+          ] }
+      } }
+    ],
+    as: "users",
+  } },
+  { $group : {
+        _id : "$_id",
+      "user_id": {"$first": "$user_id"},
+      "users": {
+        "$push": {
+          "$cond": [
+            {"$ne": [ {$size: "$users" }, 0 ]},
+            "$users",
+            null
+          ]
+        }
+     }
+  }},
+  {$project:{
+      
+      userss: {
+          "$cond": [
+            {"$ne": [ { "$arrayElemAt": [ "$users", 0 ] }, null ]},
+            "$users",
+            null
+          ]
+       }
+      
+      }}
+])
+*/
