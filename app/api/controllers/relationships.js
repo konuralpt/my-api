@@ -68,16 +68,35 @@ module.exports = {
  },
 
 updateById: function(req, res, next) {
-  relationshipsModel.findOneAndUpdate(
-      req.body.user_id,
-      {"$push": {user_friends: req.body.friend_id}},
-      function(err, user_friendsData){
-        if(err){
-          next(err);
-        }else{
-          res.json({status: "success", message: "", data:{user_friends:user_friendsData}})
-        }
-      });
+  console.log(req.body);
+  relationshipsModel.updateOne(
+    {user_id: req.body.first_user_id},
+    {$pull:{
+      relationship: {
+        user_id: req.body.second_user_id
+      }
+    }},
+    function(err, user_friendsData){
+      if(err){
+        next(err);
+      }else{
+        relationshipsModel.updateOne(
+          {user_id: req.body.first_user_id},
+          {$addToSet: {
+            relationship: {
+              user_id: req.body.second_user_id,
+              status: Number(req.body.status)
+            }
+          }},function(err,data){
+            if(err){
+              next(err);
+            }else{
+              res.json({status: "success", message: "", data:{user_friends:data}})
+            }
+          });
+      }
+    }
+    );
  },
  
 deleteById: function(req, res, next) {

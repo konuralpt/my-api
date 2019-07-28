@@ -4,6 +4,7 @@ const userController = require('../app/api/controllers/users');
 const validateJWT = require('../app/api/auth');
 
 router.get('/:user_id',userController.findById);
+router.get('/searchUser/:username/:user_id',userController.findByName);
 router.post('/register', userController.create);
 router.post('/authenticate', userController.authenticate);
 router.post('/updateUser', userController.updateUser);

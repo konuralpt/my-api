@@ -13,6 +13,20 @@ module.exports = {
 
 		})
 	},
+	findByName: function(req,res,next){
+		console.log(new RegExp('^' + req.params.username, 'i'));
+		userModel.find({
+			name: new RegExp('^' + req.params.username, 'i'),
+			_id: {$ne: req.params.user_id}
+		}, function(err,user){
+			if(err){
+				next(err);
+			}else{
+				res.json({status: "success", message:"User found", data: user});
+			}
+
+		})
+	},
 	create: function(req,res,next){
 		userModel.create({
 			name: req.body.name, 
