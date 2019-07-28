@@ -1,4 +1,5 @@
 const userModel = require('../models/users');
+const relationshipModel = require('../models/relationships');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -16,7 +17,7 @@ module.exports = {
 	findByName: function(req,res,next){
 		console.log(new RegExp('^' + req.params.username, 'i'));
 		userModel.find({
-			name: new RegExp('^' + req.params.username, 'i'),
+			username: new RegExp('^' + req.params.username, 'i'),
 			_id: {$ne: req.params.user_id}
 		}, function(err,user){
 			if(err){
@@ -29,19 +30,21 @@ module.exports = {
 	},
 	create: function(req,res,next){
 		userModel.create({
-			name: req.body.name, 
+			username: req.body.username, 
 			email: req.body.email,
 			password: req.body.password
 		}, function(err, result){
 			if(err)
 				next(err)
-			else
+			else{
+				relationshipModel.create({user_id: result._id});
 				res.json({status: "success",message: "User added", data: null});
+			}
 		});
 	},
 
 	authenticate: function(req,res,next){
-		userModel.findOne({email: req.body.email},function(err,userInfo){
+		userModel.findOne({username: req.body.username},function(err,userInfo){
 			if(err){
 				next(err);
 			}else{

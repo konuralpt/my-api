@@ -14,10 +14,9 @@ module.exports = {
    },
 
  getFriendsById: function(req, res, next) {
-   console.log(req.query);
   relationshipsModel.aggregate([
     {$match: {
-        user_id: mongoose.Types.ObjectId("5d2f574b1c27807fd7eb133d")}
+        user_id: mongoose.Types.ObjectId(req.params.user_id)}
     },
     { $unwind: "$relationship" },
     { $lookup: {

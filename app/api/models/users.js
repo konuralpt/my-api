@@ -5,7 +5,7 @@ const saltRounds = 10;
 //Define a schema
 const Schema = mongoose.Schema;
 const UserSchema = new Schema({
- name: {
+ username: {
   type: String,
   trim: true,  
   required: true,
@@ -23,7 +23,7 @@ const UserSchema = new Schema({
  image_uri: {
     type: String,
     trim: true,
-    default: ''
+    default: 'https://stosselintheclassroom.org/img/my_account_avatar.png'
     },
 socket_id: {
   type: String,
