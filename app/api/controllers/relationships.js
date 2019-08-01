@@ -15,47 +15,32 @@ module.exports = {
 
  getFriendsById: function(req, res, next) {
   relationshipsModel.aggregate([
-    {$match: {
-        user_id: mongoose.Types.ObjectId(req.params.user_id)}
-    },
-    { $unwind: "$relationship" },
-    { $lookup: {
-      from: "users",
-      let: { relationship_id: '$relationship.user_id',relationship_status: '$relationship.status', },
-      pipeline: [
-        { $match: {
-            $expr: { $and: [
-                { $eq: [ "$_id", "$$relationship_id" ] },
-                { $ne: [ "$$relationship_status", 4 ] }
-            ] }
-        } }
-      ],
-      as: "users",
-    } },
-    { $group : {
-          _id : "$_id",
-        "user_id": {"$first": "$user_id"},
-        "users": {
-          "$push": {
-            "$cond": [
-              {"$ne": [ {$size: "$users" }, 0 ]},
-              "$users",
-              null
-            ]
-          }
-       }
-    }},
-    {$project:{
-        
-        userss: {
-            "$cond": [
-              {"$ne": [ { "$arrayElemAt": [ "$users", 0 ] }, null ]},
-              "$users",
-              null
-            ]
-         }
-        
-        }}
+    {
+      $match: { user_id: mongoose.Types.ObjectId(req.params.user_id) }
+  },
+  {
+      $unwind: "$relationship"
+  },
+  {
+      $lookup: {
+          from: "users",
+          localField: "relationship.user_id",
+          foreignField: "_id",
+          as: "user"
+      }
+  },
+  {
+      $unwind: "$user"
+  },
+  {
+      $project: {
+          _id:  "$relationship.user_id",
+          username: "$user.username",
+          email: "$user.email",
+          status: "$relationship.status",
+          image_uri: "$user.image_uri"
+      }
+  }
   ]).exec((err, userFriends) => {
   if (err) {
     next(err);
@@ -113,3 +98,119 @@ create: function(req, res, next) {
  },
  
 }
+
+/*
+db.getCollection('relationships').aggregate([
+    {
+        $match: { user_id: ObjectId("5d3dbe07ea97db13d5b73195") }
+    },
+    {
+       $lookup:
+         {
+           from: 'users',
+           localField: 'relationship.user_id',
+           foreignField: '_id',
+           as: 'userss'
+         }
+    },
+    {
+        $project: { relationship: 1 }
+    },
+    {
+        $unwind: { path: "$relationship" }
+    },
+    {
+       $lookup:
+         {
+           from: 'users',
+           localField: 'relationship.user_id',
+           foreignField: '_id',
+           as: 'userss'
+         }
+    },
+    {
+        $unwind: { path: "$userss" }
+    },
+    {
+      $replaceRoot: { newRoot: { $mergeObjects: [ "$relationship", "$userss" ] } }
+    },
+    {
+        $project: { _id: 0 }
+    }
+])
+*/
+
+/*
+db.relationships.aggregate([
+    {
+        $match: { user_id: ObjectId("5d3dbe07ea97db13d5b73195") }
+    },
+    {
+        $unwind: "$relationship"
+    },
+    {
+        $lookup: {
+            from: "users",
+            localField: "relationship.user_id",
+            foreignField: "_id",
+            as: "user"
+        }
+    },
+    {
+        $unwind: "$user"
+    },
+    {
+        $project: {
+            _id:  "$relationship.user_id",
+            username: "$user.username",
+            email: "$user.email",
+            status: "$relationship.status",
+            image_uri: "$user.image_uri"
+        }
+    }
+])
+*/
+
+/*
+    {$match: {
+        user_id: mongoose.Types.ObjectId(req.params.user_id)}
+    },
+    { $unwind: "$relationship" },
+    { $lookup: {
+      from: "users",
+      let: { relationship_id: '$relationship.user_id',relationship_status: '$relationship.status', },
+      pipeline: [
+        { $match: {
+            $expr: { $and: [
+                { $eq: [ "$_id", "$$relationship_id" ] },
+                //{ $eq: [ "$$relationship_status", 2 ] }
+            ] }
+        } }
+      ],
+      as: "users",
+    } },
+    { $group : {
+          _id : "$_id",
+        "user_id": {"$first": "$user_id"},
+        "users": {
+          "$push": {
+            "$cond": [
+              {"$ne": [ {$size: "$users" }, 0 ]},
+              "$users",
+              null
+            ]
+          }
+       }
+    }},
+    {$project:{
+        
+        userss: {
+            "$cond": [
+              {"$ne": [ { "$arrayElemAt": [ "$users", 0 ] }, null ]},
+              "$users",
+              null
+            ]
+         }
+        
+        }}
+*/
