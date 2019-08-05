@@ -52,35 +52,19 @@ module.exports = {
  },
 
 updateById: function(req, res, next) {
-  console.log(req.body);
-  relationshipsModel.updateOne(
-    {user_id: req.body.first_user_id},
-    {$pull:{
-      relationship: {
-        user_id: req.body.second_user_id
-      }
-    }},
-    function(err, user_friendsData){
-      if(err){
-        next(err);
-      }else{
-        relationshipsModel.updateOne(
-          {user_id: req.body.first_user_id},
-          {$addToSet: {
-            relationship: {
-              user_id: req.body.second_user_id,
-              status: Number(req.body.status)
-            }
-          }},function(err,data){
-            if(err){
-              next(err);
-            }else{
-              res.json({status: "success", message: "", data:{user_friends:data}})
-            }
-          });
-      }
-    }
-    );
+  var obj = {
+    first_user_id: req.body.first_user_id,
+    second_user_id: req.body.second_user_id, 
+    status: req.body.status
+  };
+  update_by_id(obj)
+  .then((dataa) => {
+    if(dataa){
+      res.json({status: "success", message: "", data:{user_friends:dataa}});
+     }else{
+      res.json({status: "success", message: "", data: {user_friends:null}});
+     }
+  });
  },
  
 deleteById: function(req, res, next) {
@@ -96,8 +80,167 @@ create: function(req, res, next) {
       
     });
  },
- 
+
+
+sendRequest: function(req,res,next){
+  var obj = {
+    first_user_id: req.body.first_user_id,
+    second_user_id: req.body.second_user_id, 
+    status: req.body.status
+  }
+  //status 0
+  update_by_id(obj,true)
+  .then(() => {
+   [obj.first_user_id, obj.second_user_id] = [obj.second_user_id, obj.first_user_id];
+   obj.status = 1;
+   update_by_id(obj,true)
+   .then((dataa) => {
+     if(dataa){
+       res.json({status: "success", message: "", data: dataa});
+      }else{
+       res.json({status: "success", message: "", data: null});
+      }
+   })
+  });   
+  
+},
+
+acceptRequest: function(req, res, next){
+   var obj = {
+     first_user_id: req.body.first_user_id,
+     second_user_id: req.body.second_user_id, 
+     status: req.body.status
+   }
+   update_by_id(obj,true)
+   .then(() => {
+    [obj.first_user_id, obj.second_user_id] = [obj.second_user_id, obj.first_user_id];
+    update_by_id(obj,true)
+    .then((dataa) => {
+      if(dataa){
+        res.json({status: "success", message: "Movie added successfully!!!", data: dataa});
+       }else{
+        res.json({status: "success", message: "Movie added successfully!!!", data: null});
+       }
+    })
+   });   
+   
+},
+
+denyRequest: function(req,res,next){
+  var obj = {
+    first_user_id: req.body.first_user_id,
+    second_user_id: req.body.second_user_id, 
+  }
+  update_by_id(obj,false)
+  .then(() => {
+   [obj.first_user_id, obj.second_user_id] = [obj.second_user_id, obj.first_user_id];
+   update_by_id(obj,false)
+   .then((dataa) => {
+     if(dataa){
+       res.json({status: "success", message: "", data: dataa});
+      }else{
+       res.json({status: "success", message: "", data: null});
+      }
+   })
+  }); 
+},
+
+unRequest: function(req,res,next){
+  var obj = {
+    first_user_id: req.body.first_user_id,
+    second_user_id: req.body.second_user_id, 
+  }
+  update_by_id(obj,false)
+  .then(() => {
+   [obj.first_user_id, obj.second_user_id] = [obj.second_user_id, obj.first_user_id];
+   update_by_id(obj,false)
+   .then((dataa) => {
+     if(dataa){
+       res.json({status: "success", message: "", data: dataa});
+      }else{
+       res.json({status: "success", message: "", data: null});
+      }
+   })
+  }); 
+},
+
+blockUser: function(req,res,next){
+  var obj = {
+    first_user_id: req.body.first_user_id,
+    second_user_id: req.body.second_user_id, 
+    status: req.body.status
+  }
+  //status 3
+  update_by_id(obj,true)
+  .then(() => {
+   [obj.first_user_id, obj.second_user_id] = [obj.second_user_id, obj.first_user_id];
+   obj.status = 4;
+   update_by_id(obj,true)
+   .then((dataa) => {
+     if(dataa){
+       res.json({status: "success", message: "", data: dataa});
+      }else{
+       res.json({status: "success", message: "", data: null});
+      }
+   })
+  });  
+},
+
+unblockUser: function(req,res,next){
+  var obj = {
+    first_user_id: req.body.first_user_id,
+    second_user_id: req.body.second_user_id, 
+  }
+  update_by_id(obj,false)
+  .then(() => {
+   [obj.first_user_id, obj.second_user_id] = [obj.second_user_id, obj.first_user_id];
+   update_by_id(obj,false)
+   .then((dataa) => {
+     if(dataa){
+       res.json({status: "success", message: "", data: dataa});
+      }else{
+       res.json({status: "success", message: "", data: null});
+      }
+   })
+  });
 }
+
+};
+
+function update_by_id(obj,add_after_pull){
+  return relationshipsModel.updateOne(
+    {user_id: obj.first_user_id},
+    {$pull:{
+      relationship: {
+        user_id: obj.second_user_id
+      }
+    }},
+    function(err, user_friendsData){
+      if(err){
+        next(err);
+      }else{
+        if(add_after_pull){
+          relationshipsModel.updateOne(
+            {user_id: obj.first_user_id},
+            {$addToSet: {
+              relationship: {
+                user_id: obj.second_user_id,
+                status: Number(obj.status)
+              }
+            }},function(err,data){
+              if(err){
+                next(err);
+              }else{
+                return data;
+              }
+            });
+        }else{
+          return user_friendsData;
+        }
+      }
+    }
+    );
+};
 
 /*
 db.getCollection('relationships').aggregate([
