@@ -1,16 +1,20 @@
 const express = require('express');
 const app = express();
 
-const movies = require('./routes/movies') ;
-const users = require('./routes/users');
-
+const cards = require('./routes/cards') ;
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });   
 
 app.get('/', function(req, res){
 	res.json({"tutorial" : "Build REST API with node.js"});
 });
 
-app.use('/users', users);
-app.use('/movies', movies);
+
+
+app.use('/cards', cards);
 
 app.get('/favicon.ico', function(req, res) {
     res.sendStatus(204);
