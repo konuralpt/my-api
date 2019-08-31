@@ -9,7 +9,11 @@ const CardSchema = new Schema({
  index: Number,
  card_items: [{
      name: String,
-     index: Number
+     index: Number,
+     ribbon: {
+        type: Boolean,
+        default: false
+     }
  }]
 });
 

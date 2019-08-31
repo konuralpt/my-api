@@ -83,6 +83,17 @@ create: function(req, res, next) {
      
    });
  },
+ updateRibbon: function(req, res, next) {
+  cardModel.findOneAndUpdate(
+    {"card_items._id": req.body.item_id},
+    { "$set": { "card_items.$.ribbon": req.body.bool } },{ "new": true}, function (err, result) {
+     if (err) 
+      next(err);
+     else
+      res.json({status: "success", message: "Updated successfully!!!", data: result});
+     
+   });
+ },
  updateIndex: function(req, res, next) {
    var set ={};
    if(req.body.type == "card"){

@@ -8,6 +8,7 @@ router.post('/', cardController.create);
 router.get('/addItem/:cardId', cardController.addItem);
 router.post('/renameCard', cardController.renameCard);
 router.post('/renameCardItem', cardController.renameCardItem);
+router.post('/updateRibbon', cardController.updateRibbon);
 router.post('/deleteCardItem', cardController.deleteCardItem);
 router.post('/updateIndex', cardController.updateIndex);
 router.get('/deleteCard/:cardId', cardController.deleteById);
